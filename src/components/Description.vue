@@ -1,23 +1,15 @@
 <template>
   <div>
     <slot name="title"></slot>
+
+    <!--Container for animation-->
     <div class="inactive section__subtitle-container">
       <slot name="subtitle"></slot>
     </div>
 
-
-
-
-
-
-
-
-
-
-    <h1 class="inactive section__title">
+    <!--<h1 class="inactive section__title">
       {{ title }}<span v-if="title.span" v-text="title.span.content" :class="'section__subtitle section__subtitle--' + title.span.styling"></span>
     </h1>
-    <!--<div :v-for="subtitle in subtitles"></div>-->
     <div class="inactive section__subtitle-container">
       <template v-for="subtitle in subtitles">
         <template v-if="!subtitle.count">
@@ -28,8 +20,8 @@
         <template v-if="subtitle.count">
           <p :class="'section__subtitle section__subtitle--' + subtitle.styling">          
             <span v-if="subtitle.count" v-text="subtitleBeforeCounting(subtitle)"></span>
-            <!--<span v-if="subtitle.count" id="section__count-up" :numberCountingUp="numberCountingUp(subtitle)"></span>-->
-            <!--<i-count-up
+            <span v-if="subtitle.count" id="section__count-up" :numberCountingUp="numberCountingUp(subtitle)"></span>
+            <i-count-up
               v-if="subtitle.count"
               :start="0"
               :end="subtitle.count"
@@ -38,12 +30,12 @@
               :options="options"
               :callback="callback"
               :id="`section__count--`"
-            ></i-count-up>-->
+            ></i-count-up>
             <span v-if="subtitle.count" v-text="subtitleAfterCounting(subtitle)"></span>
           </p>
         </template>
       </template>
-    </div>
+    </div>-->
   </div>
 </template>
 <script>
@@ -129,8 +121,12 @@ export default {
     line-height 1.5
     margin 1.5em 0
     text-shadow 2px 2px 8px black
-    &--focus
-      color yellow
+
+  &--focus
+    color yellow
+  &--gray
+    color gray
+    text-shadow none
 
   .inactive
     transition opacity .7s cubic-bezier(0,0,.2,1)

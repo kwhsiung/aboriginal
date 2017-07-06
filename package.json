@@ -14,6 +14,8 @@
     "animate.css": "^3.5.2",
     "countup.js": "^1.8.5",
     "fullpage.js": "^2.9.4",
+    "semantic-ui-menu": "^2.2.10",
+    "semantic-ui-sidebar": "^2.2.10",
     "vue": "^2.3.3",
     "vue-countup-v2": "^0.1.2"
   },
