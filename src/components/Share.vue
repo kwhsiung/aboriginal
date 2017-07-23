@@ -1,6 +1,9 @@
 <template>
   <div class="share right">
-    <a class="share__icon share--toggle" @click="toggleShare()" :style="{ backgroundColor: `#356d9c` }" ><img :src="isOpen ? '../assets/close_white.png' : '../assets/share-white.png'" :alt="isOpen ? '關閉' : '開啟'"></a>
+    <a class="share__icon share--toggle" @click="toggleShare()" :style="{ backgroundColor: `#356d9c` }" >
+      <!--<img :src="isOpen ? '../assets/close_white.png' : '../assets/share-white.png'" :alt="isOpen ? '關閉' : '開啟'">-->
+      <img :src="isOpen ? getImgUrl('close_white') : getImgUrl('share-white')" :alt="isOpen ? '關閉' : '開啟'">
+    </a>
     <a id="share-line" class="share__icon share__icon--list share--line" :class="[isOpen ? 'open' : '']" @click="shareLine"><img src="../assets/line_white_v2.png" alt="Line"></a>
     <a id="share-fb" class="share__icon share__icon--list share--fb" :class="[isOpen ? 'open' : '']" @click="shareFacebook"><img src="../assets/facebook_white.png" alt="Facebook"></a>
     <a id="share-google" class="share__icon share__icon--list share--google" :class="[isOpen ? 'open' : '']" @click="shareGooglePlus"><img src="../assets/google-plus.png" alt="Google Plus"></a>
@@ -69,6 +72,12 @@ export default {
     },
     toggleShare () {
       this.isOpen = !this.isOpen
+
+      this.isOpen ? document.querySelector('.header__title-container').className += ' open' : document.querySelector('.header__title-container').classList.remove('open')
+    },
+    getImgUrl (pet) {
+      var images = require.context('../assets/', false, /\.png$/)
+      return images('./' + pet + '.png')
     }
   }
 }
@@ -82,8 +91,9 @@ export default {
   z-index 500
   // right 20px
   // bottom 20px
-  width 70px
-  height 70px
+  width 40px
+  height 40px
+  cursor pointer
   &__icon
     display flex
     justify-content center
@@ -91,9 +101,9 @@ export default {
     position absolute
     top auto
     left auto
-    width 70px
-    height 70px
-    border-radius 70px
+    width 40px
+    height 40px
+    border-radius 40px
     font-size 0
     transition transform .2s ease-out
     > img
@@ -104,9 +114,9 @@ export default {
       left auto
 
   &--toggle
-    width 70px
-    height 70px
-    border-radius 70px
+    width 40px
+    height 40px
+    border-radius 40px
     z-index 500
 
   &--line
@@ -115,7 +125,7 @@ export default {
     &.open
       transition-duration .19s
     > img
-      width 30px
+      width 20px
       height auto
       
   &--fb
@@ -124,7 +134,7 @@ export default {
     &.open
       transition-duration .19s
     > img
-      width 20px
+      width 15px
       height auto
       
   &--google
@@ -134,7 +144,7 @@ export default {
       transition-duration .19s
       
     > img
-      width 30px
+      width 20px
       height auto
 .activity
     &__share
@@ -155,13 +165,13 @@ export default {
   &.right
     .share--line
       &.open
-        transform translate3d(240px,0,0)
+        transform translate3d(150px,0,0)
     .share--fb
       &.open
-        transform translate3d(160px,0,0)
+        transform translate3d(100px,0,0)
     .share--google
       &.open
-        transform translate3d(80px,0,0)      
+        transform translate3d(50px,0,0)
   // &.bottom
   //   .share--line
   //     &.open
