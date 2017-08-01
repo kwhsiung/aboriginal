@@ -1,14 +1,14 @@
 <template>
   <header class="header">
     <div class="header__icon-container">
-      <a href="http://www.mirrormedia.mg">
-        <img class="header__logo" src="../assets/logo@2x.png" alt="鏡週刊 Mirror Media">
+      <a href="http://www.mirrormedia.mg" @click="backToHome()">
+        <img class="header__logo" src="../assets/blue-logo.png" alt="鏡週刊 Mirror Media">
       </a>
       <Share></Share>
     </div>
-    <div class="header__sidebar-toggler-container" v-if="dataStoryId !== 'landing-page'">
+    <div class="header__sidebar-toggler-container" v-if="dataStoryId !== 'landing-page' && dataStoryId !== 'ending-page'">
       <a @click="$emit('toggleSidebar')">
-        <PartitionNav :index="dataStoryIndex"></PartitionNav>
+        <PartitionNav :story="dataStoryIndex" :section="dataSectionIndex" :theme="theme"></PartitionNav>
       </a>
     </div>
   </header>
@@ -19,10 +19,16 @@ import Share from './Share'
 import PartitionNav from './PartitionNav'
 
 export default {
-  props: ['dataStoryId', 'dataStoryIndex'],
+  props: ['dataStoryId', 'dataStoryIndex', 'dataSectionIndex', 'theme'],
   components: {
     Share,
     PartitionNav
+  },
+  methods: {
+    backToHome () {
+      /* eslint-disable no-undef */
+      ga('send', 'event', 'projects', 'click', 'back to home', { nonInteraction: false })
+    }
   }
 }
 </script>
@@ -57,8 +63,9 @@ export default {
     display inline-block
     margin-left auto
 
-// @media (max-width: 1440px)
-//   .header
-//     height 80px
+@media (max-width: 1100px)
+  .header
+    padding 0 15px
+    height 55px
 </style>
 

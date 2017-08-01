@@ -1,5 +1,5 @@
 <template>
-  <button :class="['hamburger', 'hamburger--spin', theme, state]" type="button" @click="emitEvent(theme, state)">
+  <button :class="['hamburger', 'hamburger--spin', theme, state, closebtn]" type="button" @click="emitEvent(theme, state)">
     <span class="hamburger-box">
       <span class="hamburger-inner">
         <span class="hamburger-up"></span>
@@ -20,12 +20,20 @@ export default {
       default: function () {
         return ''
       }
+    },
+    closebtn: {
+      default: function () {
+        return ''
+      }
     }
   },
   methods: {
     emitEvent (theme, state) {
-      if (state === 'closebtn') {
+      if (state === 'close-issue-btn') {
         return this.$emit('closeissues')
+      }
+      if (state === 'close-more-btn') {
+        return this.$emit('closemore')
       }
       if (theme === 'hamburger--background-light') {
         return this.$emit('more')
@@ -46,6 +54,11 @@ export default {
  * @site https://jonsuh.com/hamburgers
  * @link https://github.com/jonsuh/hamburgers
  */
+ @keyframes custom_pulse {
+	0% { transform: scale(1); }
+  50% { transform: scale(1.2);}
+  100% { transform: scale(1);} }
+
 .hamburger {
   /* background-color: #142d64; */
   display: flex;
@@ -65,16 +78,25 @@ export default {
   margin: 0;
   overflow: visible; 
   opacity: 0;
-  animation-name: fadeIn;
+  /* animation-name: fadeIn;
   animation-duration: .7s;
   animation-delay: .7s;
-  animation-fill-mode: forwards; }
+  animation-fill-mode: forwards; */
+  /* 1s ease 1.4s 2 normal none running custom_pulse; */
+  animation: .7s ease .7s 1 normal forwards running fadeIn, 1s ease 1.4s 2 normal none running custom_pulse;}
 .hamburger.hamburger--background-dark {
+  position: absolute; 
+  bottom: 0;
   background-color: white;
   box-shadow: 0px 0px 1px 1px #dcdcdc;
 }
 .hamburger.hamburger--background-light {
   background-color: #142d64;
+}
+.hamburger.close-more-btn {
+  position: absolute;
+  bottom: 30px;
+  left: calc(50% - 30px);
 }
   /* .hamburger--visible {
     animation-duration: .7s;
@@ -84,7 +106,7 @@ export default {
     /* transition: opacity .1s cubic-bezier(0,0,.2,1);
     opacity: 0; */
     animation-name: fadeOut;
-    animation-duration: .1s;
+    animation-duration: 1s;
     animation-delay: 0s;
     animation-fill-mode: forwards;
   }
@@ -155,11 +177,13 @@ export default {
     transition: bottom 0.1s 0.25s ease-in, transform 0.22s cubic-bezier(0.55, 0.055, 0.675, 0.19); }
 
 .hamburger--spin.is-active {
-  transform: translateX(calc(50vw - 50px - 30px));
+  animation: none;
+  /* transform: translateX(calc(50vw - 50px - 30px)); */
   z-index: 1000;
 }
 .hamburger--spin.closebtn {
   z-index: 1000;
+  animation: .7s ease .7s 1 normal forwards running fadeIn;
 }
 .hamburger--spin.is-active .hamburger-inner, .hamburger--spin.closebtn .hamburger-inner {
   transform: rotate(225deg);
@@ -181,5 +205,68 @@ export default {
     top: 0;
     opacity: 0;
     transition: top 0.1s ease-out, opacity 0.1s 0.12s ease-out; }
+ 
+/* For IPad*/
+@media (max-width: 1100px) {
+  .hamburger.hamburger--background-dark {
+    bottom: calc(50% - 30px);
+    right: 15px;
+  }
+  .hamburger.close-more-btn {
+    left: calc(80% - 30px);
+  }
+}
+
+/* For resolutions below IPhone 6+(include)*/
+@media (max-width: 767px) {
+  .hamburger {
+    width: calc(60px/1.5);
+    height: calc(60px/1.5);
+    border-radius: calc(60px/1.5);
+    padding: 0
+  }
+   .hamburger.hamburger--background-dark {
+    bottom: calc(50% - 20px);
+    right: 15px;
+  } 
+  .hamburger:hover {
+    filter: none;
+  }
+  .hamburger-box {
+    width: 40px;
+    height: 40px;
+  }
+  .hamburger-inner {
+    top: 18px;
+    left: 10px; 
+    margin-top: 0;
+  } 
+  .hamburger-inner, .hamburger-inner::before, .hamburger-inner::after, .hamburger-up, .hamburger-down {
+    width: calc(30px/1.5);
+    /* height: calc(4px/1.5); */
+    height: 2px;
+  }
+  .hamburger-up {
+    width: calc(20px/1.5);
+    top: calc(-7px/1.5);
+  }
+  .hamburger-down {
+    width: calc(20px/1.5);
+    bottom: calc(-8px/1.5);
+  }
+  .hamburger-inner::before {
+    top: calc(-15px/1.5); 
+  }
+  .hamburger-inner::after {
+    bottom: calc(-15px/1.5); 
+  }
+
+  /* .hamburger--spin.is-active {
+    transform: translateX(calc(80vw - 15px - 20px));
+  } */
+  .hamburger.close-more-btn {
+    left: calc(80% - 20px);
+  } 
+} 
 </style>
 

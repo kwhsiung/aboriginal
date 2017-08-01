@@ -1,12 +1,12 @@
 <template>
   <div class="share right">
-    <a class="share__icon share--toggle" @click="toggleShare()" :style="{ backgroundColor: `#356d9c` }" >
+    <a class="share__icon share--toggle" @click="toggleShare()" :style="{ backgroundColor: `#142D64` }" >
       <!--<img :src="isOpen ? '../assets/close_white.png' : '../assets/share-white.png'" :alt="isOpen ? '關閉' : '開啟'">-->
       <img :src="isOpen ? getImgUrl('close_white') : getImgUrl('share-white')" :alt="isOpen ? '關閉' : '開啟'">
     </a>
-    <a id="share-line" class="share__icon share__icon--list share--line" :class="[isOpen ? 'open' : '']" @click="shareLine"><img src="../assets/line_white_v2.png" alt="Line"></a>
-    <a id="share-fb" class="share__icon share__icon--list share--fb" :class="[isOpen ? 'open' : '']" @click="shareFacebook"><img src="../assets/facebook_white.png" alt="Facebook"></a>
-    <a id="share-google" class="share__icon share__icon--list share--google" :class="[isOpen ? 'open' : '']" @click="shareGooglePlus"><img src="../assets/google-plus.png" alt="Google Plus"></a>
+    <a id="share-line" class="share__icon share__icon--list share--line" :class="[isOpen ? 'open' : '']" @click="shareLine()" target="_blank" href="http://line.naver.jp/R/msg/text/?有一群原住民族以街頭為家，為了現行的傳統領域劃設辦法阻擋了回「家」的路，抗議了超過百天。明明去年總統已向原住民族道歉，還成立特別的委員會處理族群轉型正義的問題，他們到底在抗議什麼⋯⋯？%0D%0Ahttps://www.mirrormedia.mg/projects/20170801aboriginal/"><img src="../assets/line_white_v2.png" alt="Line"></a>
+    <a id="share-fb" class="share__icon share__icon--list share--fb" :class="[isOpen ? 'open' : '']" @click="shareFacebook()" target="_blank" href="https://www.facebook.com/share.php?u=https://www.mirrormedia.mg/projects/20170801aboriginal/" ><img src="../assets/facebook_white.png" alt="Facebook"></a>
+    <a id="share-google" class="share__icon share__icon--list share--google" :class="[isOpen ? 'open' : '']" @click="shareGooglePlus()" target="_blank" href="https://plus.google.com/share?url=https://www.mirrormedia.mg/projects/20170801aboriginal/"><img src="../assets/google-plus.png" alt="Google Plus"></a>
   </div>
 </template>
 
@@ -36,7 +36,7 @@ export default {
       default: 'auto'
     },
     color: {
-      default: '#356d9c'
+      default: '#142D64'
     }
   },
   data () {
@@ -56,19 +56,16 @@ export default {
   },
   methods: {
     shareGooglePlus () {
-      // shareGooglePlus({ route: this.link })
-      console.log('shareGooglePlus')
+      /* eslint-disable no-undef */
+      ga('send', 'event', 'projects', 'click', 'share to gplus', { nonInteraction: false })
     },
     shareLine () {
-      // shareLine({
-      //   route: this.link,
-      //   title: document.querySelector('meta[property="og:title"]').getAttribute('content')
-      // })
-      console.log('shareLine')
+      /* eslint-disable no-undef */
+      ga('send', 'event', 'projects', 'click', 'share to line', { nonInteraction: false })
     },
     shareFacebook () {
-      // shareFacebook({ route: this.link })
-      console.log('shareFacebook')
+      /* eslint-disable no-undef */
+      ga('send', 'event', 'projects', 'click', 'share to fb', { nonInteraction: false })
     },
     toggleShare () {
       this.isOpen = !this.isOpen
@@ -86,13 +83,13 @@ export default {
 <style lang="stylus" scoped>
 
 .share
-  display none
+  // display none
   // position fixed
   z-index 500
   // right 20px
   // bottom 20px
-  width 40px
-  height 40px
+  width 38px
+  height 38px
   cursor pointer
   &__icon
     display flex
@@ -101,9 +98,9 @@ export default {
     position absolute
     top auto
     left auto
-    width 40px
-    height 40px
-    border-radius 40px
+    width 38px
+    height 38px
+    border-radius 38px
     font-size 0
     transition transform .2s ease-out
     > img
@@ -114,9 +111,9 @@ export default {
       left auto
 
   &--toggle
-    width 40px
-    height 40px
-    border-radius 40px
+    width 38px
+    height 38px
+    border-radius 38px
     z-index 500
 
   &--line
@@ -192,13 +189,13 @@ export default {
   //   .share--google
   //     &.open
   //       transform translate3d(-50px,0,0)
-@media (min-width 600px)
-  .share
-    display inline-block
+// @media (min-width 600px)
+//   .share
+//     display inline-block
 
-@media only screen and (max-width: 736px) and (orientation: landscape)
-  .activity
-    &__share
-      display none
+// @media only screen and (max-width: 736px) and (orientation: landscape)
+//   .activity
+//     &__share
+//       display none
 
 </style>
