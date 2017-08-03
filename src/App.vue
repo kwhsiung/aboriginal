@@ -1,6 +1,5 @@
 <template>
   <div id="app">
-    <!--<header></header>-->
     <appHeader @toggleSidebar="toggleSidebar()" 
             :dataStoryId="currentStory.dataStoryId" 
             :dataStoryIndex="currentStory.dataStoryIndex"
@@ -8,11 +7,13 @@
             :theme="currentSection.theme">
     </appHeader>
 
-     <StoryTitle :dataAnchor="currentSection.dataAnchor"
-                 :dataStoryTitle="currentStory.dataStoryTitle"
-                 :theme="currentSection.theme">
+    <StoryTitle :dataAnchor="currentSection.dataAnchor"
+                :dataStoryTitle="currentStory.dataStoryTitle"
+                :theme="currentSection.theme">
     </StoryTitle>
 
+    <!-- Sidebar containers -->
+    <!-- Navigation sidebar and icon with custom dimmed overlay -->
     <div :class="['custom-dimmed', {'custom-dimmed--visible': sidebarHasToggle}, {'custom-dimmed--invisible': !sidebarHasToggle}]" v-show="sidebarHasToggle" @click="closeSidebar()"></div>  
     <div class="ui right vertical sidebar labeled icon menu" id="menu">
       <a :class="['item', {'active': currentStory.dataStoryIndex === 1}]" @click="moveTo('what-is-going-on-in-KBlvd--section-1', 1)">
@@ -28,15 +29,18 @@
         4. 傳統領域對原住民來說是什麼？
       </a>
     </div>
+    <!-- Aside container for a section with readmore content -->
     <div class="ui left sidebar vertical menu" id="readmore">
       <div v-html="currentSection.moreTitle"></div>
       <div v-html="currentSection.moreSubtitles"></div>
     </div>
+    <!-- Aside container especially for issue topics section with detailed content -->
     <div class="ui bottom sidebar vertical" id="issues-content">
       <div v-html="currentSection.currentIssueContent"></div>
     </div>
 
-    <!-- Should merge two of this  -->
+    <!-- Buttons -->
+    <!-- Absolute position buttons for closing the aside container, could we merge two of this possibly ? -->
     <ButtonMore :theme="'hamburger--background-dark'" 
                 :state="'close-issue-btn'"
                 :closebtn="'closebtn'"
@@ -49,12 +53,15 @@
                 @closemore="closeMore"
                 v-show="currentSection.showMoreContent">
     </ButtonMore>
-
+    <!-- Absolute position button and caption container for open and reading readmore content -->
     <div class="container-more" v-show="currentSection.hasMore">
-      <ButtonMore @more="readMore"></ButtonMore>
+      <ButtonMore :state="'open-more-btn'" @more="readMore"></ButtonMore>
       <span class="container-more__caption">{{ currentSection.moreCaption }}</span>
     </div>
+
+    <!-- Main sections, with a pusher class for Semantic UI sidebar module -->
     <div class="pusher">
+      <!-- Selector class for Fullpage.js -->
       <div id="fullpage">
         <template v-for="(story, storyIndex) in stories">
           <section v-for="(section, sectionIndex) in story.sections"
@@ -67,24 +74,39 @@
                   :data-section-total="story.sections.length"
                   :theme="section.theme"
                   class="section">
+                  
+            <!-- Dynamically setting leading background video while browsing desktop version, otherwise showing poster image only -->
             <video poster="" id="bgvid" playsinline autoplay muted loop v-if="section.dataAnchor === 'landing-page'">
               <source id="bgvid-source" src="">
-              <!-- <source id="bgvid-source" src="./static/landing-page.mp4"> -->
             </video>
+            <ButtonDown v-if="section.dataAnchor === 'landing-page'"></ButtonDown>
+
+            <!-- Absolute position images for a section explaining with a map -->
+            <img class="taiwan-line" src="static/taiwan_line.png" alt="" v-if="section.dataAnchor === 'what-is-traditional-indigenous-territories--section-2'">
+            <img class="taiwan-color taiwan-color--invisible" src="static/taiwan_color.png" alt="" v-if="section.dataAnchor === 'what-is-traditional-indigenous-territories--section-2'">
+
+            <div class="photo-credit" v-if="section.hasBackgroundPhoto">{{ section.photoCredit }}</div>
+
             <Description :class="'section__description section__description--' + section.descriptionModifier">
+              <!-- Normal page elements -->
               <div slot="title" v-html="section.title"></div>
               <div slot="subtitle" v-html="section.subtitles" v-if="section.descriptionModifier !== 'space-around' && section.dataAnchor !== 'ending-page'"></div>
+
+              <!-- Issue topics page elements -->
               <div slot="issues" class="space-around" v-if="section.descriptionModifier === 'space-around'">
                 <template v-for="(issue, i) in section.issues">
                   <div class="space-around__container space-around__container--invisible" :style="'position: relative; animation-delay: .7s'">
                     <div v-html="issue.title"></div>
                     <div v-html="issue.subtitle"></div>
-                    <ButtonMore :theme="'hamburger--background-dark'" @readissues="readIssues(issue.content)"></ButtonMore>
+                    <ButtonMore :state="'open-issue-btn'" :theme="'hamburger--background-dark'" @readissues="readIssues(issue)"></ButtonMore>
                   </div>
                   <div class="vertical-line vertical-line--invisible" :style="'animation-delay: .7s'" v-if="i !== 2"></div>
                 </template>
               </div>
+
+              <!-- Ending page elements -->
               <div slot="credits" class="credits" v-html="section.subtitles" v-if="section.dataAnchor === 'ending-page'"></div>
+              <RelatedPost slot="related-posts" v-if="section.dataAnchor === 'ending-page'"></RelatedPost>
               <div slot="projects" class="projects__container" v-if="section.dataAnchor === 'ending-page'" onclick="ga('send', 'event', 'projects', 'click', 'projects', { nonInteraction: false })">
                 <p class="projects__container-title">看更多專題</p>
                 <iframe src="https://mirrormedia.mg/project-list/dark?excluding=20170801aboriginal" width="100%" height="100%" frameborder="0" scrolling="no" style="width: 1px; min-width: 100%; *width: 100%;"></iframe>
@@ -93,12 +115,6 @@
                 <div class="fb-comments" data-href="https://www.mirrormedia.mg/projects/20170801aboriginal/" data-colorscheme="dark" data-numposts="1" data-width="100%" data-order-by="reverse_time" style="width: 100%"></div>
               </div>
             </Description>
-            <ButtonDown v-if="section.dataAnchor === 'landing-page'"></ButtonDown>
-            <!---->
-            <img class="taiwan-line" src="./assets/taiwan_line.png" alt="" v-if="section.dataAnchor === 'what-is-traditional-indigenous-territories--section-2'">
-            <img class="taiwan-color taiwan-color--invisible" src="./assets/taiwan_color.png" alt="" v-if="section.dataAnchor === 'what-is-traditional-indigenous-territories--section-2'">
-            <!---->
-            <div class="photo-credit" v-if="section.hasBackgroundPhoto">{{ section.photoCredit }}</div>
           </section>
         </template>
       </div>
@@ -112,13 +128,13 @@ import StoryTitle from './components/StoryTitle'
 import Description from './components/Description'
 import ButtonMore from './components/ButtonMore'
 import ButtonDown from './components/ButtonDown'
+import RelatedPost from './components/RelatedPost'
 
 import $ from 'jquery'
 import 'fullpage.js/dist/jquery.fullpage.js'
 import CountUp from 'countup.js/dist/countUp.min.js'
 import _ from 'lodash'
 
-// import 'semantic-ui-sidebar/index.js'
 $.fn.sidebar = require('semantic-ui-sidebar')
 
 export default {
@@ -128,7 +144,8 @@ export default {
     Description,
     ButtonMore,
     ButtonDown,
-    StoryTitle
+    StoryTitle,
+    RelatedPost
   },
   data () {
     return {
@@ -145,11 +162,13 @@ export default {
         moreCaption: '',
         moreTitle: '',
         moreSubtitles: '',
+        currentIssueId: '',
         currentIssueContent: ``,
         showIssueContent: false,
         showMoreContent: false,
         theme: ''
       },
+      // Recorded object for GA purposes
       haveSeen: {
         1: false,
         2: false,
@@ -195,7 +214,6 @@ export default {
           dataStoryTitle: '凱道的原住民流浪記',
           sections: [
             {
-              // haveSeen: false,
               dataAnchor: 'what-is-going-on-in-KBlvd--section-1',
               descriptionModifier: 'left',
               theme: 'dark',
@@ -206,7 +224,6 @@ export default {
               subtitles: `<p class="section__subtitle">這句最近很紅的口號，從電視新聞、金曲獎頒獎典禮、到在街頭抗議的人們身上都看得見。這句話，起源於 2 月 23 日，原住民歌手巴奈（Panai Kusui）、那布（Nabu Husungan Istanda）和導演馬躍比吼（Mayaw Biho）為了抗議《原住民族土地及部落範圍劃設辦法》，在凱達格蘭大道住了下來，歷經 3 次驅離，目前轉移陣地到台大醫院捷運站前，已經持續了 <span class="section__subtitle section--focus large" id="days"></span> 天。</p>`
             },
             {
-              // haveSeen: false,
               dataAnchor: 'what-is-going-on-in-KBlvd--section-2',
               descriptionModifier: 'center',
               theme: 'light',
@@ -216,7 +233,6 @@ export default {
                           <p class="section__subtitle section--gray">「歷史的發展是，後來的這一群人，剝奪了原先這一群人的一切。<br>讓他們在最熟悉的土地上流離失所，<br>成為異鄉人，成為非主流，成為邊緣。 」</p>`
             },
             {
-              // haveSeen: false,
               dataAnchor: 'what-is-going-on-in-KBlvd--section-3',
               descriptionModifier: 'left',
               theme: 'dark',
@@ -238,7 +254,6 @@ export default {
           dataStoryTitle: '什麼是傳統領域？',
           sections: [
             {
-              // haveSeen: false,
               dataAnchor: 'what-is-traditional-indigenous-territories--section-1',
               descriptionModifier: 'left',
               theme: 'dark',
@@ -251,7 +266,6 @@ export default {
                           <p class="section__subtitle section--small">＊之後我們就簡稱《原住民族土地或部落範圍土地劃設辦法》為《劃設辦法》囉！</p>`
             },
             {
-              // haveSeen: false,
               dataAnchor: 'what-is-traditional-indigenous-territories--section-2',
               descriptionModifier: 'left-wide',
               theme: 'dark',
@@ -262,7 +276,6 @@ export default {
               subtitles: '<h1 class="section__subtitle">根據原民會的調查，<br>總共有 <span class="section__subtitle section--focus">180</span> 萬公頃，<br>占了整個台灣面積的 <span class="section__subtitle section--focus">50%</span></h1>'
             },
             {
-              // haveSeen: false,
               dataAnchor: 'what-is-traditional-indigenous-territories--section-3',
               descriptionModifier: 'left',
               theme: 'dark',
@@ -273,7 +286,6 @@ export default {
               subtitles: `<p class="section__subtitle">《原基法》第 21 條授權，在傳統領域內一定程度開發行為，應該要向原住民諮商，並取得部落同意或參與，原住民也可以分享相關利益。簡稱「諮商同意權」。</p>`
             },
             {
-              // haveSeen: false,
               dataAnchor: 'what-is-traditional-indigenous-territories--section-4',
               descriptionModifier: 'center',
               theme: 'light',
@@ -294,7 +306,6 @@ export default {
                           <p class="section__subtitle section--gray section--small marginless activity activity--invisible" style="animation-delay: 7.0s"">＊根據《諮商取得原住民部落同意參與辦法附件》</p>`
             },
             {
-              // haveSeen: false,
               dataAnchor: 'what-is-traditional-indigenous-territories--section-5',
               descriptionModifier: 'left',
               theme: 'dark',
@@ -313,7 +324,6 @@ export default {
           dataStoryTitle: '回不了家的原住民',
           sections: [
             {
-              // haveSeen: false,
               dataAnchor: 'the-meaning-of-traditional-indigenous-territories--section-1',
               descriptionModifier: 'center',
               theme: 'dark',
@@ -325,7 +335,6 @@ export default {
                           <span class="section__subtitle section--focus">還排除私有地，只能在公有地上劃！</span></p>`
             },
             {
-              // haveSeen: false,
               dataAnchor: 'the-meaning-of-traditional-indigenous-territories--section-2',
               descriptionModifier: 'left',
               theme: 'dark',
@@ -336,7 +345,6 @@ export default {
                           <p class="section__subtitle"><mark class="mark--blue">原民會</mark>：私有地只有 20 幾萬公頃。目前先公告 80 萬公頃，是衡酌部落的能力跟意願。比較沒有能力的部落需要由公家機關協助，根據我們能挹注的經費，估計初步至少能先劃 80 萬公頃。傳統領域真正的範圍是多少，就要看部落，最後當然可能超過 80 萬公頃。</p>`
             },
             {
-              // haveSeen: false,
               dataAnchor: 'the-meaning-of-traditional-indigenous-territories--section-3',
               descriptionModifier: 'left',
               theme: 'dark',
@@ -347,7 +355,6 @@ export default {
                           <p class="section__subtitle"><mark class="mark--blue">原民會</mark>：《劃設辦法》既然來自《原基法》第 21 條的授權，劃出來的就是諮商同意權的範圍。雖然目前規範需經過部落同意的行為，大部分是公共建設，但裡面也有「蓋民宿」這種一般人會碰到的事啊，這就會涉及到私人財產權，有違背憲法的疑慮。</p>`
             },
             {
-              // haveSeen: false,
               dataAnchor: 'the-meaning-of-traditional-indigenous-territories--section-4',
               descriptionModifier: 'left',
               theme: 'dark',
@@ -373,7 +380,6 @@ export default {
                           <p class="section__subtitle">但是，事情真的有這麼簡單嗎？</p>`
             },
             {
-              // haveSeen: false,
               dataAnchor: 'the-meaning-of-traditional-indigenous-territories--section-5',
               descriptionModifier: 'left',
               theme: 'dark',
@@ -430,7 +436,6 @@ export default {
                           <p class="section__subtitle">依照現行的法律，原住民在傳統領域上只能行使諮商同意權，但不代表未來都是如此。<br>例如去年才通過的、預計 2022 年上路的《國土計畫法》，原住民就能在傳統領域上依照自己的意願規劃使用土地。</p>`
             },
             {
-              // haveSeen: false,
               dataAnchor: 'the-meaning-of-traditional-indigenous-territories--section-6',
               descriptionModifier: 'center',
               theme: 'light',
@@ -448,7 +453,6 @@ export default {
                           </div>`
             },
             {
-              // haveSeen: false,
               dataAnchor: 'the-meaning-of-traditional-indigenous-territories--section-7',
               descriptionModifier: 'center',
               theme: 'light',
@@ -468,7 +472,6 @@ export default {
           dataStoryTitle: '傳統領域對原住民來說是什麼？',
           sections: [
             {
-              // haveSeen: false,
               dataAnchor: 'the-issues-and-solutions-on-traditional-indigenous-territories--section-1',
               descriptionModifier: 'left',
               theme: 'dark',
@@ -520,7 +523,6 @@ export default {
               subtitles: `<p class="section__subtitle">倚海而居的台東縣阿美族都蘭部落，在今年 2 月自主宣告了傳統領域，連海洋也包含在內。傳統領域不分公私有地，但在部落的管制規則中，權利卻公私有別，僅公有機關的開發案需共享利益，私有地不用；但私有地具規模的開發仍須經部落同意，他們認為這是一種「當鄰居前的告知」。東海岸面臨的開發威脅從未少過，現在又有完全是私有地的度假村要來闖關⋯⋯</p>`
             },
             {
-              // haveSeen: false,
               dataAnchor: 'the-issues-and-solutions-on-traditional-indigenous-territories--section-2',
               descriptionModifier: 'left',
               theme: 'dark',
@@ -579,7 +581,6 @@ export default {
               subtitles: `<p class="section__subtitle">每年小米收穫祭後，卑南族的男人就會去獵場巡視，因為土地滋養了部落的族人，族人就必須守護土地，也因此，守護家園是部落男人一生最大的使命。卡大地布透過幾十年的文化復振找回部落的文化與團結，但傳統領域面臨的開發危機，還是不斷襲來⋯⋯</p>`// TODOs: TBA
             },
             {
-              // haveSeen: false,
               dataAnchor: 'the-issues-and-solutions-on-traditional-indigenous-territories--section-3',
               descriptionModifier: 'left',
               theme: 'dark',
@@ -609,7 +610,7 @@ export default {
                               <p>不舞不只是藝術家，還是原住民中第一個拿到有機茶認證的農夫。大約 15 年前，不舞說當時也不是很瞭解「有機」的概念，只覺得有機對人是友善的，按照原住民的生活方式，就是要走有機。</p>
                               <p>我們來到不舞的茶園，茶樹長得很高，還高矮不一，錯落著雜草，幾乎把人都淹沒。「做有機很孤獨，也很沒有效率，但最起碼，我們可以喝到健康無毒的茶。」不舞說。走了十幾年，在外人看來相當辛苦的事，她們僅靠著簡單的信念就走過來。</p>
                               <p>「其實從外人看來，原住民的生活方式很沒有經濟效益啊。但過去幾百年，我們就是這樣生活的，不想著賺錢，就能自給自足。」不舞提到家族的歷史，阿古雅那家族的傳統領域就在現在的阿里山遊樂區，甚至「阿里山」之所以這樣命名，就是來自家族內的厲害首領阿巴里。</p>
-                              <p>不舞提到，以前鄒族人管理傳統領域，大家都維護得很好，因為這是屬於你的獵場，不能讓資源枯竭。不管是河流裡的魚、山裡的獵物、哪些土地可以種田，如果數量開始減少、地力有枯竭的跡象，就像換另外一區，大家會跑來跑去。很多行為背後都有智慧，就像原住民會砍掉一些樹木座小範圍的耕種，是為了讓光線透進來，鳥類會變多，生物的多樣性就會增加。</p>
+                              <p>不舞提到，以前鄒族人管理傳統領域，大家都維護得很好，因為這是屬於你的獵場，不能讓資源枯竭。不管是河流裡的魚、山裡的獵物、哪些土地可以種田，如果數量開始減少、地力有枯竭的跡象，就像換另外一區，大家會跑來跑去。很多行為背後都有智慧，就像原住民會砍掉一些樹木做小範圍的耕種，是為了讓光線透進來，鳥類會變多，生物的多樣性就會增加。</p>
                               <p>「以前的林相，大樹都不能砍，所以才有破千年的檜木林。因為萬物都有靈，你也可以跟森林對話，不過以前的人走到森林裡是不講話的，因為會吵到神靈。在森林裡唯一的聲音就是唱歌，或是敲擊樂器，用這樣的方式來跟神靈說話。」不舞說，「以前的人面對自然環境，是彼此尊重」。</p>
                               <figure>
                                 <img src="./static/pnguu3.jpg"></img>
@@ -637,7 +638,6 @@ export default {
               subtitles: `<p class="section__subtitle">短短的四百多年殖民政權，完全改變了原住民族的樣貌，土地也不斷地流失。日治時期，有人要在現在的阿里山森林遊樂區內開墾，還得跟原住民租地；國民政府來台以後卻直接蓋了一座門，把族人阻擋在外。回到部落自力更生的鄒族的不舞（Pu-u Akuyana）深信，與自然共處能力是原住民古老的基因，只要讓原住民有權利自主規劃運用傳統領域，一定能跟祖先們一樣，譜出美好的戀曲。</p>`// TODOs: TBA
             },
             {
-              // haveSeen: false,
               dataAnchor: 'the-issues-and-solutions-on-traditional-indigenous-territories--section-4',
               descriptionModifier: 'left',
               theme: 'dark',
@@ -688,12 +688,12 @@ export default {
               subtitles: `<p class="section__subtitle">司馬庫斯（Smangus）位在新竹尖石鄉海拔 1578 公尺的高山上，唯有一條聯外道路進出，自稱「上帝的部落」。這個地方不等政府施捨，用自己的力量實踐了《原基法》賦予原住民的權利，雖然司馬庫斯的故事有一定的特殊性，但在「把傳統領域還給原住民後會發生什麼事」的問題上，或許可以提供讀者一些想像。</p>`// TODOs: TBA
             },
             {
-              // haveSeen: false,
               dataAnchor: 'the-issues-and-solutions-on-traditional-indigenous-territories--section-5',
               descriptionModifier: 'space-around',
               theme: 'dark',
               issues: [
                 {
+                  id: '21-1',
                   title: `<h1 class="section__issue-title">「誰」可以畫傳統領域？</h1>`,
                   subtitle: `<p class="section__subtitle">要完整實踐原住民的知情同意權，有三個重要的元素。<span class="mobile-hide">目前「在哪裡劃」、「在什麼情形下可以行使權利」都已有相關法條，但「誰」可以劃傳統領域呢？劃設傳統領域的權利主體是誰？是什麼樣的組織？</span><span class="desktop-hide">⋯⋯</span></p>`,
                   content: `<p>雖然原民會已有規劃要推動「部落公法人」機制，但目前各方對它的功能有不同的想像跟期待，尚未完全定案。設置部落公法人是讓部落在體制內有法律上的「主體」，原住民族政策協進會執行長陳旻園指出，這是過去推動傳統領域的劃設、到處理所有權的《土海法》，都不斷碰到的問題，也就是土地要畫給誰？誰有權利主張？</p>
@@ -703,6 +703,7 @@ export default {
                             <p>但陳旻園也提醒，原住民也應該準備好，「如果部落沒有主體，還要等待政府的輔佐，等待政府劃一塊傳統領域給你，那跟過去的福利政策有什麼不同？對於社會大眾來說，也會面臨一個問題，原住民憑什麼？永遠就陷在這樣的爭議裡。」</p>`
                 },
                 {
+                  id: '21-2',
                   title: `<h1 class="section__issue-title">《土海法》會是萬靈丹嗎？</h1>`,
                   subtitle: `<p class="section__subtitle">按照總統蔡英文的指示，傳統領域的劃設要「分階段」<span class="mobile-hide">實行，私有地要透過《原住民土地及海域法》來處理。過去三進三出立法院的《土海法》，這次過得了關嗎？</span><span class="desktop-hide">⋯⋯</span></p>`,
                   content: `<p>私有地被排除在傳統領域之外，除了諮商同意權行使範圍無法完整以外，原住民族也有土地再也拿不回來的焦慮。除了因殖民因素被侵佔的公有地、被騙或在不知情狀況簽下的放棄土地文件，樣態實在太多元。政大民族系副教授官大偉就舉例，尖石鄉的前山有一塊地，是日治時期要蓋軍用機場時，政府拿原住民傳統領域跟私人企業換地。他明明是原住民的傳統領域，但按照現在的法令，它就是被排除在外的私有地。</p>
@@ -718,6 +719,7 @@ export default {
                             <p>被問及《土海法》立法的時程，原民會表示未來要經過原轉會充分討論後，才進行後續法制作業（最新一次的原轉會因應蘭嶼核廢料調查報告出爐，主題聚焦在真相還原與補償上），雖然被列為優先法案，但實際的時程還無法預估。總統的道歉會是萬靈丹，讓所有的歧視與誤解都消失嗎？</p>`
                 },
                 {
+                  id: '21-3',
                   title: `<h1 class="section__issue-title">一條回家的路？</h1>`,
                   subtitle: `<p class="section__subtitle">即使現有的傳統領域劃設辦法爭議被解決<span class="mobile-hide">，原住民真的就能在傳統領域上做自己想做的事了嗎？原住民回家的路，需要整個社會一起努力⋯⋯</span><span class="desktop-hide">&nbsp⋯⋯</span></p>`,
                   content: `<p>「原住民好像從出生就是違法的。」阿度蘭阿美斯文化協進會的總幹事蔡政良提到族人在鄰近海域捕魚的狀況，「海巡署先抓再說，部落族人就是先躲再說。原住民就是一直處在這種陰影下，不斷地躲、不斷地逃，這是累積了上百年，在原住民文化底蘊中一個很悲哀的層次⋯⋯。」</p>
@@ -738,7 +740,6 @@ export default {
               subtitles: ``
             },
             {
-              // haveSeen: false,
               dataAnchor: 'the-issues-and-solutions-on-traditional-indigenous-territories--section-6',
               descriptionModifier: 'center',
               theme: 'light',
@@ -757,7 +758,6 @@ export default {
           dataStoryTitle: '結束頁',
           sections: [
             {
-              // haveSeen: false,
               dataAnchor: 'ending-page',
               descriptionModifier: 'center',
               theme: 'dark',
@@ -765,13 +765,15 @@ export default {
               title: `<h1 class="section__title--invisible section__title"></h1>`,
               subtitles: `<p class="section__subtitle mobile-hide" style="margin:0; padding-top: 10%">文字採訪：李又如&nbsp&nbsp&nbsp&nbsp&nbsp攝影：林俊耀、簡信昌、鐘聖雄、楊子磊&nbsp&nbsp&nbsp&nbsp&nbsp影音：楊仁翔、陳岳威</p>
                           <p class="section__subtitle mobile-hide" style="margin:0">視覺設計：陳怡蒨&nbsp&nbsp&nbsp&nbsp&nbsp網頁製作：熊凱文</p>
-                          <p class="section__subtitle mobile-hide" style="margin:0">鏡傳媒 MirrorMedia 2017</p>
+                          <p class="section__subtitle mobile-hide" style="margin:0">鏡傳媒 MirrorMedia</p>
+                          <p class="section__subtitle mobile-hide" style="margin:0">2017.08.01</p>
                           <p class="section__subtitle desktop-hide" style="margin:0; padding-top: 10%">文字採訪：李又如</p>
                           <p class="section__subtitle desktop-hide" style="margin:0">攝影：林俊耀、簡信昌、鐘聖雄、楊子磊</p>
                           <p class="section__subtitle desktop-hide" style="margin:0">影音：楊仁翔、陳岳威</p>
                           <p class="section__subtitle desktop-hide" style="margin:0">視覺設計：陳怡蒨</p>
                           <p class="section__subtitle desktop-hide" style="margin:0">網頁製作：熊凱文</p>
-                          <p class="section__subtitle desktop-hide" style="margin:0">鏡傳媒 MirrorMedia 2017</p>`
+                          <p class="section__subtitle desktop-hide" style="margin:0">鏡傳媒 MirrorMedia</p>
+                          <p class="section__subtitle desktop-hide" style="margin:0">2017.08.01</p>`
             }
           ]
         }
@@ -808,45 +810,19 @@ export default {
         .sidebar('setting', 'transition', 'overlay')
         .sidebar('toggle')
     },
-    readIssues (content) {
+    readIssues (issue) {
       $.fn.fullpage.setAllowScrolling(false)
-      // $('.hamburger').hasClass('is-active') ? $('.hamburger').removeClass('is-active') : $('.hamburger').addClass('is-active')
-      // $('.container-more__caption').addClass('container-more__caption--invisible')
-      this.currentSection.currentIssueContent = content
+      this.currentSection.currentIssueId = issue.id
+      this.currentSection.currentIssueContent = issue.content
       this.currentSection.showIssueContent = true
       $('.bottom.sidebar')
         .sidebar('setting', 'transition', 'overlay')
         .sidebar('toggle')
-      if (this.currentSection.currentIssueContent === `<p>雖然原民會已有規劃要推動「部落公法人」機制，但目前各方對它的功能有不同的想像跟期待，尚未完全定案。設置部落公法人是讓部落在體制內有法律上的「主體」，原住民族政策協進會執行長陳旻園指出，這是過去推動傳統領域的劃設、到處理所有權的《土海法》，都不斷碰到的問題，也就是土地要畫給誰？誰有權利主張？</p>
-                            <p>「當然，集體意識強的族群比較會講話，但對大部分的族群跟部落來說，內部的討論機制都已經被現在的民意機關、組織架空了。」陳旻園指出，部落裡可能有民族議會、教會、協會等有代表性的組織，但在法律上只有行政機構跟民意代表有法源依據，這是為什麼目前看到的部落代表都是後者。</p>
-                            <p>陳旻園指出，主體需要定義清楚，部落也需要政府協助培力。他舉劃設辦法為例，要先組一個劃設團隊、再提出範圍計畫、送到鄉公所、核定完之後再送到縣市政府⋯⋯，「程序之複雜，就像過去保留地的增擴編，持續了 20 幾年，還有好幾萬件卡在公部門過不去，這也會造成族人的消極，反正又過不了。」</p>
-                            <p>「最好的方式，就是主動協助。這不就是主管機關要做的嗎？今天已經有這麼多部落自主宣告，那原民會做了什麼？你要去鼓勵、去幫忙，其他部落看到成效出來，就會覺得我也可以試試看。」陳旻園感嘆，本應該是照顧族人的部會，反而設下這麼高的門檻，像在打小孩給別人看。</p>
-                            <p>但陳旻園也提醒，原住民也應該準備好，「如果部落沒有主體，還要等待政府的輔佐，等待政府劃一塊傳統領域給你，那跟過去的福利政策有什麼不同？對於社會大眾來說，也會面臨一個問題，原住民憑什麼？永遠就陷在這樣的爭議裡。」</p>`) {
+      if (this.currentSection.currentIssueId === '21-1') {
         ga('send', 'event', 'projects', 'click', '21-1 info', { nonInteraction: false })
-      } else if (this.currentSection.currentIssueContent === `<p>私有地被排除在傳統領域之外，除了諮商同意權行使範圍無法完整以外，原住民族也有土地再也拿不回來的焦慮。除了因殖民因素被侵佔的公有地、被騙或在不知情狀況簽下的放棄土地文件，樣態實在太多元。政大民族系副教授官大偉就舉例，尖石鄉的前山有一塊地，是日治時期要蓋軍用機場時，政府拿原住民傳統領域跟私人企業換地。他明明是原住民的傳統領域，但按照現在的法令，它就是被排除在外的私有地。</p>
-                            <p>而原民會的態度是，這些爭議土地權屬的問題，要放到《土海法》來解決。目前原民會是依照總統蔡英文擔任原住民轉型正義委員會主席在 3 月 20 日做出來的結論，也就是傳統領域劃設辦法分階段實施，初期先排除私有地，並持續推動《原住民族土地與海域法》的立法。</p>
-                            <p>《土海法》是根據《原基法》第 20 條，明訂「政府承認原住民族土地及自然資源權利」。但《土海法》由於牽涉太廣，加上是直接規範部落可以有集體使用土地的權利，過去三進三出立法院，都未能成功立法。</p>
-                            <figure>
-                                <img src="./static/issue2.jpg"></img>
-                                <figcaption>反對者認為，連只有諮商同意權的傳統領域劃設辦法都有問題，何況是涉及所有權的土海法。</figcaption>
-                            </figure>
-                            <p>立委高潞・以用提到，卡關的原因是「各部會、主流社會都還不認識原住民」，原住民族政策協會執行長陳旻園也指出，去年在立法院的時候還被國民黨召委林益世質疑「為什麼拿這種分土地的法案來討論」，讓他感嘆，轉型正義在某些人心中被誤解得十分不堪。</p>
-                            <p>那這次原民會哪來的自信，把它當作弭平爭議的關鍵？原民會傳統領域科吳科長指出，關鍵就在去年 8 月 1 日總統蔡英文跟原住民道歉。他提到，總統的政見跟過去有很大的不同，目前正依據政見與道歉文對《土海法》草案做通盤檢討。</p>
-                            <p>但原住民族政策協會執行長陳旻園直言，連諮商同意權這麼低的權利，都被限縮在公有地上；土海法涉及的是土地返還、共管等高強度的權利，「怎麼可能會有放寬的機會」。</p>
-                            <p>被問及《土海法》立法的時程，原民會表示未來要經過原轉會充分討論後，才進行後續法制作業（最新一次的原轉會因應蘭嶼核廢料調查報告出爐，主題聚焦在真相還原與補償上），雖然被列為優先法案，但實際的時程還無法預估。總統的道歉會是萬靈丹，讓所有的歧視與誤解都消失嗎？</p>`) {
+      } else if (this.currentSection.currentIssueId === '21-2') {
         ga('send', 'event', 'projects', 'click', '21-2 info', { nonInteraction: false })
-      } else if (this.currentSection.currentIssueContent === `<p>「原住民好像從出生就是違法的。」阿度蘭阿美斯文化協進會的總幹事蔡政良提到族人在鄰近海域捕魚的狀況，「海巡署先抓再說，部落族人就是先躲再說。原住民就是一直處在這種陰影下，不斷地躲、不斷地逃，這是累積了上百年，在原住民文化底蘊中一個很悲哀的層次⋯⋯。」</p>
-                            <p>原住民傳統領域的完整劃設，是為原住民族開了一條回家的路；但原住民要能真正回到自己的家園、做自己想做的事，還有一段路。擋在他們面前的，至少有《礦業法》、《森林法》、《野生動物保護法》、《漁業法》、《槍砲彈藥管制條例》⋯⋯，《原基法》保障原住民權益的精神，碰到其他主管機關的法律，很少打勝仗。</p>
-                            <p>雖然相關部會設計了一套「事先報備」的制度，讓原住民能夠因傳統文化、祭儀等非營利目的打獵，但事先報備本身就與打獵文化違背。如布農族的獵人若要上山取獵物，不能大聲張揚，否則就無法獲得山神的贈禮；獵槍還只能用不安全的「土製獵槍」，不合時宜的法律甚至危害到獵人的生命危險。而從 2003 年到現在，已有 382 位原住民因為日常狩獵被判刑，刑期最重是 3 年 6 個月。</p>
-                            <p>又如同《礦業法》中地主就算不願意、礦業權人只要提存一筆錢就能逕自開發的相關法條，讓族人就算經過所有權確認的法律長路，拿到了所有權狀，面對土地被礦場霸佔仍莫可奈何。</p>
-                            <figure>
-                                <img src="./static/issue3.jpg"></img>
-                                <figcaption>原住民的轉型正義不只有傳統領域這一項。</figcaption>
-                            </figure>
-                            <p>雖然新政府上任後，農委會、林務局陸續發布解釋令，讓原住民在打獵、採取樹木、捕魚都能獲得相關權益保障。《礦業法》也將修正權益不對等的條文，並針對原住民採礦除罪化。去年 6 月因背負 14 顆玫瑰石遭警方依竊盜、違反礦業法起訴的 5 名太魯閣族人，花蓮地方法院也首度援引《原基法》判決在傳統領域採礦無罪。</p>
-                            <p>儘管做出對原住民權益更進步的解釋，這個新政府，同時也是讓「採礦權續約得以無視原住民諮商同意權」、「原住民傳統領域劃設辦法排除私有地」的新政府。</p>
-                            <p>當總統蔡英文以國家元首的身份道歉，政府內部都出現這樣的歧見，讓人如何相信政府有決心、又要如何取得社會的共識？</p>
-                            <p>「加拿大 1982 年建立了新的憲法，政府可以跟原住民訂定新的條約。」政大民族系副教授官大偉說，「它是為了有一個更團結的加拿大。祖先曾經犯錯，但我們知道反省，這是對國家存在的正當性有一個更好的教育。」回首歷史過程，這是每個殖民國家都要面對的不光彩歷史，「不這麼做也可以，只是社會的陰影就會持續存在。」</p>`) {
+      } else if (this.currentSection.currentIssueId === '21-3') {
         ga('send', 'event', 'projects', 'click', '21-3 info', { nonInteraction: false })
       }
     },
@@ -887,7 +863,6 @@ export default {
       this.currentSection.moreCaption = loadedSection.moreCaption
       this.currentSection.moreTitle = loadedSection.moreTitle
       this.currentSection.moreSubtitles = loadedSection.moreSubtitles
-      // this.currentSection.theme = loadedSection.theme
     },
     storyOnChangeHandler (leavingSection, direction) {
       const leavingSectionHeaderTitleContent = $('.header__title')
@@ -918,30 +893,6 @@ export default {
         }
       }
     },
-    // backgroundThemeOnChangeHandler (index, nextIndex) {
-    //   const currentTheme = $($('#fullpage').children()[index - 1]).attr('theme')
-    //   const nextTheme = $($('#fullpage').children()[nextIndex - 1]).attr('theme')
-    //   const classNameList = [
-    //     // 'header__title-container',
-    //     'header__title',
-    //     'partition-nav',
-    //     'partition-nav__content',
-    //     'partition-nav__content--active',
-    //     'partition-nav__content-top-left',
-    //     'partition-nav__content-top-right',
-    //     'partition-nav__content-bottom-left',
-    //     'partition-nav__content-bottom-right'
-    //   ]
-    //   if (currentTheme !== nextTheme) {
-    //     this.changeThemeFromTo(classNameList, currentTheme, nextTheme)
-    //   }
-    // },
-    // changeThemeFromTo (classNameList, from, to) {
-    //   for (let className of classNameList) {
-    //     $(`.${className}`).removeClass(`${className}--${from}`)
-    //     $(`.${className}`).addClass(`${className}--${to}`)
-    //   }
-    // },
     hasChildrenClass (parent, className) {
       return parent.find(`.${className}`).length > 0
     },
@@ -1000,9 +951,9 @@ export default {
   mounted () {
     const vm = this
     const sections = _.flatMap(vm.stories, (d) => d.sections)
-
     const windowWidth = $(window).width()
 
+    // Landing page background video and poster handler
     if (windowWidth > 1100) {
       document.getElementById('bgvid-source').setAttribute('src', './static/landing-page.mp4')
     } else if (windowWidth > 767) {
@@ -1050,13 +1001,12 @@ export default {
           vm.animateVisibleSelector(loadedSection, ['taiwan-color'], true)
         }
         if (sections[index - 1].hasMore) {
-          vm.animateVisibleSelector(loadedSection, ['hamburger--background-light', 'container-more__caption'], true)
+          vm.animateVisibleSelector(loadedSection, ['hamburger--background-dark', 'container-more__caption'], true)
         }
         if (sections[index - 1].issues) {
           vm.animateVisibleSelector(loadedSection, ['hamburger--background-dark', 'vertical-line', 'space-around__container'], true)
         }
-        // vm.animateVisibleSelector(loadedSection, ['verticle-line'], true)
-        //
+
         vm.changeCurrentStory(sections[index - 1], loadedSection)
         if (anchorLink === 'what-is-going-on-in-KBlvd--section-1') {
           vm.animateCountUp()
@@ -1096,12 +1046,11 @@ export default {
           vm.animateVisibleSelector(leavingSection, ['taiwan-color'], false)
         }
         if (sections[index - 1].hasMore) {
-          vm.animateVisibleSelector(leavingSection, ['hamburger--background-light', 'container-more__caption'], false)
+          vm.animateVisibleSelector(leavingSection, ['hamburger--background-dark', 'container-more__caption'], false)
         }
         if (sections[index - 1].issues) {
           vm.animateVisibleSelector(leavingSection, ['hamburger--background-dark', 'vertical-line', 'space-around__container'], false)
         }
-        // vm.animateVisibleSelector(leavingSection, ['vertical-line'], false)
         vm.changeTheme(sections[nextIndex - 1].theme)
         vm.storyOnChangeHandler(leavingSection, direction)
         // vm.backgroundThemeOnChangeHandler(index, nextIndex)
@@ -1118,6 +1067,7 @@ export default {
           .sidebar('toggle')
         }
 
+        // Hiding bottom and left sidebars for elimating empty space remain on screen, may cause a flick on Safari ?
         if (nextIndex === sections.length) {
           document.querySelector('.ui.bottom.sidebar').style.display = 'none'
           document.querySelector('.ui.right.sidebar').style.display = 'none'
@@ -1430,49 +1380,6 @@ p
       background-position center center
       background-repeat no-repeat
 
-    // #villa
-    //   background-image url('assets/villa.jpg')
-    // #dulan1
-    //   background-image url('assets/dulan1.jpg')
-    // #dulan2
-    //   background-image url('assets/dulan2.jpg')
-    // #dulan3
-    //   background-image url('assets/dulan3.jpg')
-    // #dulan4
-    //   background-image url('assets/dulan4.jpg')
-    // #dulan5
-    //   background-image url('assets/dulan5.jpg')
-    // #katratripulr1
-    //   background-image url('assets/katratripulr1.jpg')
-    // #katratripulr2
-    //   background-image url('assets/katratripulr2.jpg')
-    // #katratripulr3
-    //   background-image url('assets/katratripulr3.jpg')
-    // #katratripulr4
-    //   background-image url('assets/katratripulr4.jpg')
-    // #pnguu1
-    //   background-image url('assets/pnguu1.jpg')
-    // #pnguu2
-    //   background-image url('assets/pnguu2.jpg')
-    // #pnguu3
-    //   background-image url('assets/pnguu3.jpg')
-    // #pnguu4
-    //   background-image url('assets/pnguu4.jpg')
-    // #pnguu5
-    //   background-image url('assets/pnguu5.jpg')
-    // #smangus1
-    //   background-image url('assets/smangus1.jpg')
-    // #smangus2
-    //   background-image url('assets/smangus2.jpg')
-    // #smangus3
-    //   background-image url('assets/smangus3.jpg')
-    // #smangus4
-    //   background-image url('assets/smangus4.jpg')
-    // #issue2
-    //   background-image url('assets/issue2.jpg')
-    // #issue3
-    //   background-image url('assets/issue3.jpg')
-
   .portrait
     width 70%
     padding 2% 0px 2% 0px
@@ -1576,7 +1483,7 @@ p
       max-width 32%
       -webkit-backface-visibility hidden
       background linear-gradient(to left, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1))
-      // background url('./assets/test.svg')
+      // background url('static/test.svg')
       &-wide
         justify-content center
         align-items flex-start
@@ -1680,17 +1587,6 @@ p
   font-family: 'Noto Sans TC', 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
-// .project-container.dark
-//   background-color transparent !important
-// .proj_list
-//   background-color transparent !important
-// .proj_item
-//   background-color transparent !important
-// .proj_item_title
-//   background-color transparent !important
-// .proj_item_desc
-//   background-color transparent !important
 
 @media (max-width: 1600px)
   .right.sidebar
@@ -1909,7 +1805,7 @@ p
       height 38%
       right 30%
     .photo-credit
-      font-size calc(20px/1)
+      font-size calc(14px/1)
       right 15px
       bottom 28px
     &[data-anchor="what-is-traditional-indigenous-territories--section-2"]
@@ -2008,7 +1904,7 @@ p
       height 38%
       right 30%
     .photo-credit
-      font-size calc(20px/1.2)
+      font-size calc(14px/1.2)
       right 15px
       bottom 28px
     &[data-anchor="what-is-traditional-indigenous-territories--section-2"]
@@ -2103,7 +1999,7 @@ p
       height 38%
       right 30%
     .photo-credit
-      font-size calc(20px/1.4)
+      font-size calc(14px/1.4)
       right 15px
       bottom 29px
     &[data-anchor="what-is-traditional-indigenous-territories--section-2"]
@@ -2198,7 +2094,7 @@ p
       height 40%
       right 30%
     .photo-credit
-      font-size calc(20px/1.7)
+      font-size calc(14px/1.7)
       right 15px
       bottom 30px
     &[data-anchor="what-is-traditional-indigenous-territories--section-2"]

@@ -13,7 +13,7 @@ export default {
   props: {
     theme: {
       default: function () {
-        return 'hamburger--background-light'
+        return 'hamburger--background-dark'
       }
     },
     state: {
@@ -35,10 +35,16 @@ export default {
       if (state === 'close-more-btn') {
         return this.$emit('closemore')
       }
-      if (theme === 'hamburger--background-light') {
+      // if (theme === 'hamburger--background-light') {
+      //   return this.$emit('more')
+      // }
+      // if (theme === 'hamburger--background-dark') {
+      //   return this.$emit('readissues')
+      // }
+      if (state === 'open-more-btn') {
         return this.$emit('more')
       }
-      if (theme === 'hamburger--background-dark') {
+      if (state === 'open-issue-btn') {
         return this.$emit('readissues')
       }
     }
@@ -85,8 +91,8 @@ export default {
   /* 1s ease 1.4s 2 normal none running custom_pulse; */
   animation: .7s ease .7s 1 normal forwards running fadeIn, 1s ease 1.4s 2 normal none running custom_pulse;}
 .hamburger.hamburger--background-dark {
-  position: absolute; 
-  bottom: 0;
+  /* position: absolute;  */
+  /* bottom: 0; */
   background-color: white;
   box-shadow: 0px 0px 1px 1px #dcdcdc;
 }
@@ -97,6 +103,10 @@ export default {
   position: absolute;
   bottom: 30px;
   left: calc(50% - 30px);
+}
+.hamburger.open-issue-btn {
+  position: absolute;
+  bottom: 0; 
 }
   /* .hamburger--visible {
     animation-duration: .7s;

@@ -8,11 +8,10 @@
     </div>
 
     <slot name="issues"></slot>
-      <slot name="credits"></slot> 
-      <slot name="projects"></slot> 
-      <!-- <div style="width: 100%; height: 230px; overflow: scroll"> -->
-        <slot name="fbcomments"></slot>
-      <!-- </div> -->
+    <slot name="credits"></slot> 
+    <slot name="related-posts"></slot>
+    <slot name="projects"></slot> 
+    <slot name="fbcomments"></slot>
   </div>
 </template>
 <style lang="stylus">
@@ -228,9 +227,9 @@
   .projects__container
     box-sizing border-box
     width 80%
-    height 400px
-    margin 2% 0
-    padding 10px
+    height 450px
+    margin 5% 0
+    // padding 10px
     // border 1px solid white
     display flex
     flex-direction column
@@ -471,10 +470,10 @@
       justify-content center
       align-items flex-start
     .projects__container
-      width 95%
-      height 550px
-      margin 10% 0
-      padding 40px 10px 0px 10px
+      width 100%
+      height 400px
+      margin 15% 0
+      // padding 40px 10px 0px 10px
       // border 1px solid white
       display flex
       flex-direction column
@@ -544,10 +543,10 @@
           line-height calc(44px/1.6)
 
     .projects__container
-      width 95%
+      width 100%
       height 400px
-      margin 10% 0
-      padding 40px 10px 0px 10px
+      margin 25% 0
+      // padding 40px 10px 0px 10px
       // border 1px solid white
       display flex
       flex-direction column

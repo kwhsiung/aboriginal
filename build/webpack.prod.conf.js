@@ -99,7 +99,7 @@ var webpackConfig = merge(baseWebpackConfig, {
     //   ['/'],
     //   {
     //     navigationLocked: true,
-    //     ignoreJSErrors: true
+    //     captureAfterElementExists: '.fp-enabled'
     //   }
     // )
   ]
