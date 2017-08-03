@@ -261,7 +261,7 @@ export default {
               hasBackgroundPhoto: true,
               photoCredit: '攝影：楊仁翔',
               title: `<h1 class="section__title--invisible section__title">傳統領域是什麼？</h1>`,
-              subtitles: `<p class="section__subtitle marginbottom-less">原住民族土地 ＝ <br>原住民傳統領域 ＋ 原住民保留地（原住民私有地）</p>
+              subtitles: `<p class="section__subtitle marginbottom-less">原住民族土地 ＝ <br>原住民傳統領域 ＋ 原住民保留地（有所有權的原住民土地）</p>
                           <p class="section__subtitle">因為「原住民保留地」已經有相關法律處理，所以《原住民族土地或部落範圍土地劃設辦法》處理的是「原住民傳統領域」</p>
                           <p class="section__subtitle section--small">＊之後我們就簡稱《原住民族土地或部落範圍土地劃設辦法》為《劃設辦法》囉！</p>`
             },
@@ -748,7 +748,7 @@ export default {
               subtitles: `<div class="li--inside mobile-marginless">
                             <p class="section__subtitle list-margin-normal section--gray self-animate self-animate--invisible" style="animation-delay: .7s"><a style="text-decoration: none; border-bottom: 1px solid gray; color: gray" target="_blank" href="https://www.facebook.com/IndigenousTransformativeJusticeTW/?fref=ts" onclick="ga('send', 'event', 'projects', 'click', '22 hyper1', { nonInteraction: false })">參加原轉小教室，去街頭陪伴還在抗議的原住民</a></p>
                             <p class="section__subtitle list-margin-normal section--gray self-animate self-animate--invisible" style="animation-delay: 1.4s"><a style="text-decoration: none; border-bottom: 1px solid gray; color: gray" target="_blank" href="https://www.cet-taiwan.org/node/3030" onclick="ga('send', 'event', 'projects', 'click', '22 hyper2', { nonInteraction: false })">參加環原台灣論壇，瞭解更多原住民族權利</a></p>
-                            <p class="section__subtitle list-margin-normal section--gray self-animate self-animate--invisible" style="animation-delay: 2.1s"><a style="text-decoration: none; border-bottom: 1px solid gray; color: gray" target="_blank" href="https://www.facebook.com/IndigenousYouthFront/?fref=ts" onclick="ga('send', 'event', 'projects', 'click', '22 hyper3', { nonInteraction: false })">跟原住民族青年陣線一起監督蔡英文的原民政策（平台即將在 8/3 上線！）</a></p>
+                            <p class="section__subtitle list-margin-normal section--gray self-animate self-animate--invisible" style="animation-delay: 2.1s"><a style="text-decoration: none; border-bottom: 1px solid gray; color: gray" target="_blank" href="https://watching-tsai.indigenousyf.tw" onclick="ga('send', 'event', 'projects', 'click', '22 hyper3', { nonInteraction: false })">跟原住民族青年陣線一起監督蔡英文的原民政策</a></p>
                           </div class="li--inside">`
             }
           ]
