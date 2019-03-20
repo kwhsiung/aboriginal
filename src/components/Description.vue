@@ -43,6 +43,10 @@
         font-family Georgia
         font-weight bold
         line-height 46px
+        width 80px
+        height 50px
+        display inline-block
+        text-align center
     &--gray
       color gray !important
       text-shadow none !important
@@ -502,6 +506,7 @@
         &.large
           font-size calc(46px/1.6)
           line-height calc(46px/1.6)
+          width 60px
       &--small
         font-size calc(20px/1.6)
         line-height 1.5

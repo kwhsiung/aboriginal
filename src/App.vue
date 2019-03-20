@@ -942,9 +942,11 @@ export default {
 
       let days = Math.floor(difference / (60 * 60 * 1000 * 24) * 1)
       let years = Math.floor(days / 365)
-      if (years > 1) {
-        days = days - (years * 365)
-      }
+      console.log(`days: ${days}`)
+      console.log(`years: ${years}`)
+      // if (years > 1) {
+      //   days = days - (years * 365)
+      // }
       return days
     }
   },
